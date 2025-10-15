@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mini Weather App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to right, #74ebd5, #ACB6E5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .container {
+      text-align: center;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      width: 300px;
+    }
+    input {
+      padding: 10px;
+      width: 80%;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+    button {
+      padding: 10px 20px;
+      border: none;
+      background-color: #0078D7;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #005ea6;
+    }
+    #weatherResult {
+      margin-top: 20px;
+      font-size: 18px;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>🌤️ Mini Weather App</h2>
+    <input type="text" id="cityInput" placeholder="Enter city name">
+    <button id="searchBtn">Get Weather</button>
+    <div id="weatherResult"></div>
+  </div>
+
+  <script>
+    document.getElementById("searchBtn").addEventListener("click", getWeather);
+
+    async function getWeather() {
+      const city = document.getElementById("cityInput").value.trim();
+      const apiKey = "1ee6e9a951be3b1ae490aba3e11e3424";
+      const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+        console.log(data); // 👀 Check response in console
+
+        if (data.cod === "404" || data.cod === 404) {
+          document.getElementById("weatherResult").innerHTML = "❌ City not found!";
+          return;
+        }
+
+        const temp = data.main.temp;
+        const feelsLike = data.main.feels_like;
+        const humidity = data.main.humidity;
+        const condition = data.weather[0].description;
+        const icon = data.weather[0].icon;
+
+        document.getElementById("weatherResult").innerHTML = `
+          <img src="https://openweathermap.org/img/wn/${icon}@2x.png" alt="icon">
+          <p>🌍 <b>${city}</b></p>
+          <p>🌡️ Temperature: <b>${temp}°C</b></p>
+          <p>😌 Feels like: <b>${feelsLike}°C</b></p>
+          <p>💧 Humidity: <b>${humidity}%</b></p>
+          <p>☁️ Condition: <b>${condition}</b></p>
+        `;
+      } catch (error) {
+        console.error(error);
+        document.getElementById("weatherResult").innerHTML = "⚠️ Error fetching data!";
+      }
+    }
+  </script>
+</body>
+</html>
